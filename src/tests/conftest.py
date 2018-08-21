@@ -1,5 +1,5 @@
 from multiprocessing import Process
-from .. import server
+from src import server
 import pytest
 
 

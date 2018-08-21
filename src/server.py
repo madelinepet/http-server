@@ -2,10 +2,28 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 import os
-
+from textwrap import dedent
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        raw_html = dedent('''<!DOCTYPE html>
+        <html>
+        <head>
+            <title> cowsay </title>
+        </head>
+        <body>
+            <header>
+                <nav>
+                <ul>
+                    <li><a href="/cow">cowsay</a></li>
+                </ul>
+                </nav>
+            <header>
+            <main>
+                <!-- project description defining how users can further interact with the application -->
+            </main>
+        </body>
+        </html>''')
         parsed_path = urlparse(self.path)
         parsed_qs = parse_qs(parsed_path.query)
 
