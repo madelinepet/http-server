@@ -48,7 +48,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             print(parsed_qs)
             # {'msg': ['gohard2018']}
             parsed_message = parsed_qs['msg'][0]
-            bunng = cow.Bunny()
+            bunny = cow.Bunny()
             msg = bunny.milk(parsed_message)
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
