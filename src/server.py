@@ -32,11 +32,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         parsed_path = urlparse(self.path)
         parsed_qs = parse_qs(parsed_path.query)
 
-        # set a status code
-        # set any headers
-        # set any body data on the response
-        # end headers
-
         if parsed_path.path == '/':
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
@@ -45,16 +40,28 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             return
 
         elif parsed_path.path == '/cow':
-            print(parsed_qs)
-            # {'msg': ['gohard2018']}
-            parsed_message = parsed_qs['msg'][0]
-            bunny = cow.Bunny()
-            msg = bunny.milk(parsed_message)
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/html')
+            try:
+                parsed_message = parsed_qs['msg'][0]
+                bunny = cow.Bunny()
+                msg = bunny.milk(parsed_message)
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html')
+                self.end_headers()
+                self.wfile.write(msg.encode())
+                return
+
+            except KeyError:
+                self.send_response(400)
+                self.end_headers()
+                dragon = cow.DragonAndCow()
+                msg = dragon.milk('400 Bad Request')
+                self.wfile.write(msg.encode())
+        else:
+            self.send_response(404)
             self.end_headers()
+            dragon = cow.DragonAndCow()
+            msg = dragon.milk('404 Not Found')
             self.wfile.write(msg.encode())
-            return
 
         self.send_response(404)
         self.end_headers()
@@ -92,6 +99,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 def create_server():
+    """ creates the server instance
+    """
     return HTTPServer(
         ('127.0.0.1', int(os.environ['PORT'])),
         SimpleHTTPRequestHandler
@@ -99,6 +108,8 @@ def create_server():
 
 
 def run_forever():
+    """ Runs the server
+    """
     server = create_server()
 
     try:
