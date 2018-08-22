@@ -3,10 +3,12 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 import os
 from textwrap import dedent
+from cowpy import cow
+
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        raw_html = dedent('''<!DOCTYPE html>
+        raw_html = dedent('''
         <html>
         <head>
             <title> cowsay </title>
@@ -36,11 +38,20 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.end_headers()
-            self.wfile.write(b'<html><body><h1>Hello world</h1></body></html>')
+            self.wfile.write(raw_html.encode())
             return
 
-        elif parsed_path.path == '/banana':
-            pass
+        elif parsed_path.path == '/cow':
+            print(parsed_qs)
+            # {'msg': ['gohard2018']}
+            parsed_message = parsed_qs['msg'][0]
+            cheese = cow.Bunny()
+            msg = cheese.milk(parsed_message)
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            self.wfile.write(msg.encode())
+            return
 
         self.send_response(404)
         self.end_headers()
@@ -60,8 +71,8 @@ def run_forever():
     server = create_server()
 
     try:
-        server.serve_forever()
         print(f'Server running on {os.environ["PORT"]}')
+        server.serve_forever()
 
     except KeyboardInterrupt:
         server.shutdown()
